@@ -48,14 +48,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        RetrofitFactory.getZhiHUDailyServiceInstance().getSplashImage("1900*1080")
-        .subscribe(new Consumer<ResponseBody>() {
-            @Override
-            public void accept(ResponseBody responseBody) throws Exception {
-
-                Log.i("wk","response==>"+responseBody.string());
-            }
-        });
 
 
     }
