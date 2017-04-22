@@ -104,6 +104,7 @@ public class SplashActivity extends AppCompatActivity {
                                 .error(R.drawable.img_error)
                                 .centerCrop()
                                 .into(iv_splash);
+
                         setScaleAnim(iv_splash);
 
                     }
