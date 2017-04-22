@@ -1,4 +1,4 @@
-package com.merpyzf.zhihudaily.util;
+package com.merpyzf.zhihudaily.util.http;
 
 import android.util.Log;
 
