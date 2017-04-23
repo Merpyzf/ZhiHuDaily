@@ -1,5 +1,6 @@
-package com.merpyzf.zhihudaily.util.http;
+package com.merpyzf.zhihudaily.data;
 
+import com.merpyzf.zhihudaily.data.entity.NewsBean;
 import com.merpyzf.zhihudaily.data.entity.SplashBean;
 
 import io.reactivex.Observable;
@@ -19,6 +20,14 @@ public interface ZhiHuDailyApi {
     @GET("7/prefetch-launch-images/{image_size}")
     Observable<SplashBean> getSplashImage(@Path("image_size")String image_size);
 
+//    http://news-at.zhihu.com/api/4/news/latest
+    @GET("4/news/latest")
+    Observable<NewsBean> getLatestNews();
 
 
+
+//    http://news-at.zhihu.com/api/
+
+    @GET("4/news/before/{news_date}")
+    Observable<NewsBean>getHistoryNews(@Path("news_date")String news_date);
 }

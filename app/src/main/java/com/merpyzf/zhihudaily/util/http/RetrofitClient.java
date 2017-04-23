@@ -3,6 +3,7 @@ package com.merpyzf.zhihudaily.util.http;
 import android.util.Log;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.merpyzf.zhihudaily.data.ZhiHuDailyApi;
 
 import java.util.concurrent.TimeUnit;
 

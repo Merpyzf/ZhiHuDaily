@@ -1,5 +1,7 @@
 package com.merpyzf.zhihudaily.util.http;
 
+import com.merpyzf.zhihudaily.data.ZhiHuDailyApi;
+
 /**
  * Created by 春水碧于天 on 2017/4/21.
  */

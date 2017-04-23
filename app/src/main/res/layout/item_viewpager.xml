@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fl_top"
+    android:layout_width="match_parent"
+    android:layout_height="230dp"
+    android:background="@color/colorAccent">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="230dp"
+    android:background="@color/colorAccent">
+
+    <ImageView
+        android:id="@+id/iv_top_show"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_error" />
+
+    <TextView
+        android:id="@+id/tv_top_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:padding="10dp"
+        android:text="这是一个标题"
+        android:textColor="#fff"
+        android:textSize="23sp" />
+
+
+</RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+
+        android:background="#0c454545"
+        />
+
+
+f
+</FrameLayout>
