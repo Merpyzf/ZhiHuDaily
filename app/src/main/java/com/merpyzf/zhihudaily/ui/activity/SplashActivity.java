@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -26,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.merpyzf.zhihudaily.MainActivity;
 import com.merpyzf.zhihudaily.R;
 import com.merpyzf.zhihudaily.data.entity.SplashBean;
+import com.merpyzf.zhihudaily.util.LogUtil;
 import com.merpyzf.zhihudaily.util.ToastUtil;
 import com.merpyzf.zhihudaily.util.http.RetrofitFactory;
 
@@ -43,7 +43,6 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
@@ -90,11 +89,15 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
+                .subscribe(new Observer<String>() {
                     @Override
-                    public void accept(String splash_image_url) throws Exception {
+                    public void onSubscribe(Disposable d) {
 
-                        Log.i("wk", "闪屏页url:" + splash_image_url + "当前线程:" + Thread.currentThread().getName());
+                    }
+
+                    @Override
+                    public void onNext(String splash_image_url) {
+
 
                         mSplashImageUrl = splash_image_url;
 
@@ -106,6 +109,24 @@ public class SplashActivity extends AppCompatActivity {
                                 .into(iv_splash);
 
                         setScaleAnim(iv_splash);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                       LogUtil.i("出错");
+
+//                        mSplashImageName
+                        LogUtil.i("图片名称:"+mSplashImageName);
+
+                        ToastUtil.show(context,"你已经进入了没有网络的异次元");
+
+                        startActivity(new Intent(context, MainActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onComplete() {
 
                     }
                 });

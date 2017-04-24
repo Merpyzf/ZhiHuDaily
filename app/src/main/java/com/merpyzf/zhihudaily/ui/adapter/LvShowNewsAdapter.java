@@ -1,6 +1,7 @@
 package com.merpyzf.zhihudaily.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,6 +14,7 @@ import com.merpyzf.zhihudaily.data.entity.NewsBean;
 import com.merpyzf.zhihudaily.util.DateUtil;
 import com.merpyzf.zhihudaily.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -25,18 +27,19 @@ import butterknife.ButterKnife;
 public class LvShowNewsAdapter extends BaseAdapter {
 
     private Context context;
-    private NewsBean newsBean;
+    private ArrayList<NewsBean.StoriesBean> StoriesBean;
+    private ActionBar actionBar;
 
-    public LvShowNewsAdapter(Context context,NewsBean newsBean) {
+
+    public LvShowNewsAdapter(Context context, ArrayList<NewsBean.StoriesBean> StoriesBean) {
 
         this.context = context;
-        this.newsBean = newsBean;
-
+        this.StoriesBean = StoriesBean;
     }
 
     @Override
     public int getCount() {
-        return newsBean.getStories().size();
+        return StoriesBean.size();
     }
 
     @Override
@@ -56,60 +59,66 @@ public class LvShowNewsAdapter extends BaseAdapter {
 
         ViewHolder viewHolder = null;
 
-        if(convertView == null){
+        if (convertView == null) {
 
-                convertView = View.inflate(context,R.layout.item_listview,null);
-                viewHolder = new ViewHolder(convertView);
+            convertView = View.inflate(context, R.layout.item_listview, null);
+            viewHolder = new ViewHolder(convertView);
 
-                convertView.setTag(viewHolder);
+            convertView.setTag(viewHolder);
 
-        }else {
+        } else {
 
             viewHolder = (ViewHolder) convertView.getTag();
 
         }
 
 
-        NewsBean.StoriesBean storiesBean = newsBean.getStories().get(position);
+        NewsBean.StoriesBean storiesBean = StoriesBean.get(position);
+
+
+        Glide.with(context)
+                .load(storiesBean.getImages().get(0))
+                .centerCrop()
+                .into(viewHolder.iv_news_show);
+
+        viewHolder.tv_title.setText(storiesBean.getTitle());
+
+        //新闻时间
+        String newsDate = StoriesBean.get(position).getDate();
+        //当前系统的时间
+        String sysDate = DateUtil.getNowDay(new Date(System.currentTimeMillis()));
+
+
+        LogUtil.i("时间==》"+newsDate);
 
 
 
-            Glide.with(context)
-                    .load(storiesBean.getImages().get(0))
-                    .centerCrop()
-                    .into(viewHolder.iv_news_show);
+        //表示时间为今日
+        if (StoriesBean.get(position).getDate() != null) {
 
-            viewHolder.tv_title.setText(storiesBean.getTitle());
+            if(newsDate.equals(sysDate)) {
 
 
+                viewHolder.tv_show_date.setVisibility(View.VISIBLE);
+                viewHolder.tv_show_date.setText("今日热闻");
+
+            }else {
+
+                String formatDate = DateUtil.getWeek(newsDate);
+
+//                LogUtil.i("星期:" + week);
+                viewHolder.tv_show_date.setVisibility(View.VISIBLE);
+                viewHolder.tv_show_date.setText(formatDate);
+
+            }
 
 
+        }  else {
 
+            viewHolder.tv_show_date.setVisibility(View.GONE);
 
-                //表示时间为今日
-                if (newsBean.getStories().get(position).getDate()!=null&&newsBean.getStories().get(position).getDate().equals(DateUtil.getNowDay(new Date(System.currentTimeMillis())))) {
-
-                    viewHolder.tv_show_date.setVisibility(View.VISIBLE);
-                    viewHolder.tv_show_date.setText("今日热闻");
-
-
-
-
-                } else if (newsBean.getStories().get(position).getDate()!=null&& !newsBean.getStories().get(position).getDate().equals(DateUtil.getNowDay(new Date(System.currentTimeMillis())))){
-
-                    //表示是过去的时间
-                    LogUtil.i("过去的时间");
-
-                    viewHolder.tv_show_date.setVisibility(View.VISIBLE);
-                    viewHolder.tv_show_date.setText(newsBean.getDate());
-
-
-                }else {
-
-                    viewHolder.tv_show_date.setVisibility(View.GONE);
-
-                    viewHolder.tv_show_date.setText("");
-                }
+            viewHolder.tv_show_date.setText("");
+        }
 
 
         return convertView;
@@ -118,15 +127,17 @@ public class LvShowNewsAdapter extends BaseAdapter {
     class ViewHolder {
 
         public ViewHolder(View view) {
-            ButterKnife.bind(this,view);
+            ButterKnife.bind(this, view);
         }
 
-        @BindView(R.id.tv_title) TextView tv_title;
-        @BindView(R.id.iv_news_show) ImageView iv_news_show;
-        @BindView(R.id.tv_show_date) TextView tv_show_date;
+        @BindView(R.id.tv_title)
+        TextView tv_title;
+        @BindView(R.id.iv_news_show)
+        ImageView iv_news_show;
+        @BindView(R.id.tv_show_date)
+        TextView tv_show_date;
 
     }
-
 
 
 }
