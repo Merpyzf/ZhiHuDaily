@@ -4,12 +4,12 @@
     android:id="@+id/fl_top"
     android:layout_width="match_parent"
     android:layout_height="230dp"
-    android:background="@color/colorAccent">
+  >
 
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="230dp"
-    android:background="@color/colorAccent">
+    >
 
     <ImageView
         android:id="@+id/iv_top_show"
@@ -26,7 +26,7 @@
         android:layout_marginBottom="30dp"
         android:padding="10dp"
         android:text="这是一个标题"
-        android:textColor="#fff"
+        android:textColor="@color/colorWhite"
         android:textSize="23sp" />
 
 

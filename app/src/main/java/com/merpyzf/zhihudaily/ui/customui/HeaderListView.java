@@ -37,12 +37,9 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
     @BindView(R.id.viewPager) ViewPager mViewPager;
     @BindView(R.id.ll_point) LinearLayout ll_point;
 
-
     private TextView tv_top_title;
     private ImageView iv_top_show;
     private int mPosition;
-
-
 
     private List<NewsBean.TopStoriesBean> mTopStories = null;
     private ArrayList<View> mTopViews = null;
@@ -65,11 +62,10 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
         //初始化头布局
         InitHeader();
 
-
     }
 
     /**
-     * 设置数据
+     * 设置新闻数据
      * @param TopStories
      */
     public void setTopStories(List TopStories){
@@ -88,6 +84,9 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
     }
 
+    /**
+     * 初始化数据
+     */
     private void InitData() {
 
         mTopViews = new ArrayList<View>();
@@ -148,7 +147,7 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
     }
 
     /**
-     * 展示热门信息的ViewPager开始循环
+     * 开始轮播图循环
      */
     private void startTopPagerLoop() {
 
@@ -174,7 +173,6 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
             }
         },3000,3000);
 
-
     }
 
     /**
@@ -195,7 +193,6 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
                 iv_gray_point.setImageResource(R.drawable.white_point_shape);
             }
 
-
             ll_point.addView(iv_gray_point);
 
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv_gray_point.getLayoutParams();
@@ -209,22 +206,17 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
     }
 
 
-
-
+    /**
+     * 初始化listview的头布局
+     */
     private void InitHeader() {
 
         View view = View.inflate(context, R.layout.header_listview,null);
 
-
-//        mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
         ButterKnife.bind(this,view);
-        //根据屏幕的高度，动态的设置mViewPager的高度
-
+        // TODO: 2017/4/24 根据屏幕的高度动态设置轮播图的高度，指示器的大小
         addHeaderView(view);
-
         mViewPager.setOnTouchListener(this);
-
-
 
     }
 
@@ -247,8 +239,6 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
                     mTimer = null;
                 }
 
-
-
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(mTimer!=null){
@@ -263,8 +253,7 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
 
             case MotionEvent.ACTION_UP:
-
-
+                //当手指抬起时继续进行轮播图的滚动
                 startTopPagerLoop();
 
                 break;
@@ -304,8 +293,8 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
                 //判读滑动的方向
                 if (Math.abs(offsetX)>Math.abs(offsetY)) {
 
-
                     requestDisallowInterceptTouchEvent(true);
+
                 } else {
 
                     requestDisallowInterceptTouchEvent(false);
@@ -318,9 +307,6 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
                 break;
         }
-
-
-
 
 
         return super.dispatchTouchEvent(ev);
@@ -360,15 +346,11 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
 
 
-
-
             return view;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-
-//            LogUtil.i("被销毁的下标："+position);
 
             //注意：不在这里进行view销毁的工作
 
@@ -385,19 +367,17 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-
-
-
     }
 
-
-
+    /**
+     * 当ViewPager页面切换时，更新指示器的状态
+     * @param position
+     */
     @Override
     public void onPageSelected(final int position) {
 
 
         for(int i=0;i<ll_point.getChildCount();i++){
-
 
             if(i==position%mTopViews.size()){
 
@@ -409,12 +389,9 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
                 point.setImageResource(R.drawable.gray_point_shape);
             }
 
-
         }
 
         mPosition = position%mTopStories.size();
-
-
 
     }
 
@@ -425,6 +402,10 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
     }
 
+
+    /**
+     * ViewPager点击的回调监听，将事件传递给外部
+     */
     private TopPagerClickListener mTopPagerClickListener;
 
     public interface TopPagerClickListener{
@@ -437,9 +418,5 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
         mTopPagerClickListener = topPagerClickListener;
 
     }
-
-
-
-
 
 }

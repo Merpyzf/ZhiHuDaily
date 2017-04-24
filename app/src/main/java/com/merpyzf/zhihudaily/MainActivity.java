@@ -1,6 +1,7 @@
 package com.merpyzf.zhihudaily;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -12,9 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.merpyzf.zhihudaily.data.entity.NewsBean;
+import com.merpyzf.zhihudaily.ui.activity.ContentActivity;
 import com.merpyzf.zhihudaily.ui.adapter.LvShowNewsAdapter;
 import com.merpyzf.zhihudaily.ui.customui.HeaderListView;
 import com.merpyzf.zhihudaily.util.CacheUtil;
@@ -34,7 +38,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
 
     @BindView(R.id.toolbar)
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private Date mDate = new Date(System.currentTimeMillis());
     private boolean isLoading = false;
     private ArrayList<NewsBean.StoriesBean> mStoriesBeens = new ArrayList<NewsBean.StoriesBean>();
+    private String strDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         context = this;
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -129,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         /**
-         * 设置toolbar的标题,根据新闻的日期
+         * 分页加载下一页数据
          */
         mHeaderListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
 
@@ -157,9 +164,10 @@ public class MainActivity extends AppCompatActivity {
 
 
                         SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
-                        String StrDate = sf.format(mDate);
+                        strDate = sf.format(mDate);
+
                         RetrofitFactory.getZhiHUDailyServiceInstance()
-                                .getHistoryNews(StrDate)
+                                .getHistoryNews(strDate)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Observer<NewsBean>() {
                                     @Override
@@ -173,6 +181,23 @@ public class MainActivity extends AppCompatActivity {
                                         newsBean.getStories().get(0).setDate(newsBean.getDate());
                                         mStoriesBeens.addAll(newsBean.getStories());
                                         mAdapter.notifyDataSetChanged();
+
+                                        String dateStr = DateUtil.getWeek(String.valueOf(Integer.valueOf(strDate)-1));
+
+
+                                        final Snackbar snackbar = Snackbar.make(view, dateStr + " 的内容已备好，请享用", Toast.LENGTH_SHORT);
+
+                                        snackbar.show();
+
+                                        snackbar.setAction("ok", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                snackbar.dismiss();
+                                            }
+                                        });
+
+                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorGreen));
+
 
                                     }
 
@@ -219,8 +244,43 @@ public class MainActivity extends AppCompatActivity {
 
                 LogUtil.i("position:" + position + "新闻id:" + storiesBean.getId());
 
+
+
             }
         });
+
+
+        /**
+         *
+         * ListView中item点击监听
+         */
+        mHeaderListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                NewsBean.StoriesBean Story = (NewsBean.StoriesBean) parent.getItemAtPosition(position);
+
+                LinearLayout ll = (LinearLayout)view;
+
+                startActivity(Story.getId(),Story.getTitle());
+
+
+            }
+        });
+    }
+
+    /**
+     * 开启一个Activity
+     * @param id  文章id
+     */
+    private void startActivity(int id,String title) {
+
+        Intent intent = new Intent(this, ContentActivity.class);
+        intent.putExtra("article_id",id);
+        intent.putExtra("title",title);
+
+
+        startActivity(intent);
 
     }
 
@@ -282,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
 
     }
+
 
 
 }

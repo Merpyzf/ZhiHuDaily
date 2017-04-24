@@ -1,5 +1,6 @@
 package com.merpyzf.zhihudaily.data;
 
+import com.merpyzf.zhihudaily.data.entity.ContentBean;
 import com.merpyzf.zhihudaily.data.entity.NewsBean;
 import com.merpyzf.zhihudaily.data.entity.SplashBean;
 
@@ -30,4 +31,12 @@ public interface ZhiHuDailyApi {
 
     @GET("4/news/before/{news_date}")
     Observable<NewsBean>getHistoryNews(@Path("news_date")String news_date);
+
+//    http://news-at.zhihu.com/api/
+
+    @GET("4/news/{news_id}")
+    Observable<ContentBean> getNewsContent(@Path("news_id")String news_id);
+
+
+
 }

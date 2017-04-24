@@ -45,7 +45,7 @@ public class LvShowNewsAdapter extends BaseAdapter {
     @Override
     public Object getItem(int position) {
 
-        return position;
+        return StoriesBean.get(position);
     }
 
 
@@ -106,7 +106,6 @@ public class LvShowNewsAdapter extends BaseAdapter {
 
                 String formatDate = DateUtil.getWeek(newsDate);
 
-//                LogUtil.i("星期:" + week);
                 viewHolder.tv_show_date.setVisibility(View.VISIBLE);
                 viewHolder.tv_show_date.setText(formatDate);
 
