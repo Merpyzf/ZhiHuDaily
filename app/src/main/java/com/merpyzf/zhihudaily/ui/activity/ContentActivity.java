@@ -11,9 +11,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.FutureTarget;
 import com.merpyzf.zhihudaily.R;
 import com.merpyzf.zhihudaily.data.entity.ContentBean;
+import com.merpyzf.zhihudaily.util.LogUtil;
 import com.merpyzf.zhihudaily.util.http.RetrofitFactory;
 
 import java.util.concurrent.ExecutionException;
@@ -163,7 +166,23 @@ public class ContentActivity extends AppCompatActivity {
                 });
 
 
+        /**
+         * 监听webView加载页面是否完成
+         */
+        mWebView.setWebViewClient(new WebViewClient(){
 
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+//                http://news-at.zhihu.com/api/4/story-extra/#{id}
+
+                LogUtil.i("url==>"+url+"加载结束");
+
+
+            }
+
+        });
 
 
     }
@@ -172,6 +191,8 @@ public class ContentActivity extends AppCompatActivity {
      * webView加载html资源
      */
     private void loadHtmlResource(ContentBean contentBean) {
+
+        LogUtil.i("新闻id"+contentBean.getId());
 
         String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/news.css\" type=\"text/css\">";
         String html = "<html><head>" + css + "</head><body>" + contentBean.getBody() + "</body></html>";
@@ -183,7 +204,20 @@ public class ContentActivity extends AppCompatActivity {
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+          getMenuInflater().inflate(R.menu.menu_content_activity,menu);
+
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+
+
+
 
         switch (item.getItemId()){
 
@@ -192,6 +226,15 @@ public class ContentActivity extends AppCompatActivity {
                 onBackPressed();
 
                 break;
+
+
+            case R.id.item_comment:
+
+                // TODO: 2017/4/25  查看评论的页面
+
+
+                break;
+
 
         }
 

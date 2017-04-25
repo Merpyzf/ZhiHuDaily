@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity  {
                                         String dateStr = DateUtil.getWeek(String.valueOf(Integer.valueOf(strDate)-1));
 
 
+
                                         final Snackbar snackbar = Snackbar.make(view, dateStr + " 的内容已备好，请享用", Toast.LENGTH_SHORT);
 
                                         snackbar.show();
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity  {
                                         });
 
                                         snackbar.setActionTextColor(getResources().getColor(R.color.colorGreen));
+
 
 
                                     }
