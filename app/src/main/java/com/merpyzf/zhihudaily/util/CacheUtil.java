@@ -40,6 +40,15 @@ public class CacheUtil {
     }
 
 
+    public static String getJsonCacheLatestNews(Context context){
+
+        String json = SharePreUtil.getString(context);
+
+
+        return json;
+    }
+
+
 
 
 }

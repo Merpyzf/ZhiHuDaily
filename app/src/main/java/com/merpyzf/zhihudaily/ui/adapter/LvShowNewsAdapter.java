@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.merpyzf.zhihudaily.R;
 import com.merpyzf.zhihudaily.data.entity.NewsBean;
 import com.merpyzf.zhihudaily.util.DateUtil;
@@ -78,6 +79,7 @@ public class LvShowNewsAdapter extends BaseAdapter {
 
         Glide.with(context)
                 .load(storiesBean.getImages().get(0))
+                .priority(Priority.HIGH)
                 .centerCrop()
                 .into(viewHolder.iv_news_show);
 

@@ -1,11 +1,12 @@
 package com.merpyzf.zhihudaily.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,10 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,10 +27,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.FutureTarget;
 import com.merpyzf.zhihudaily.R;
+import com.merpyzf.zhihudaily.data.JavascriptInterface;
+import com.merpyzf.zhihudaily.data.entity.CollectBean;
 import com.merpyzf.zhihudaily.data.entity.ContentBean;
+import com.merpyzf.zhihudaily.util.DBUtil;
 import com.merpyzf.zhihudaily.util.LogUtil;
+import com.merpyzf.zhihudaily.util.SnackBarUtil;
 import com.merpyzf.zhihudaily.util.http.RetrofitFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
@@ -40,7 +51,6 @@ public class ContentActivity extends AppCompatActivity {
     private Context context;
 
 
-
     @BindView(R.id.iv_bg)
     ImageView iv_bg;
     @BindView(R.id.collapsing_toolbar)
@@ -51,9 +61,11 @@ public class ContentActivity extends AppCompatActivity {
     WebView mWebView;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @BindView(R.id.CoordinatorLayout)
+    CoordinatorLayout CoordinatorLayout;
 
 
-
+    @SuppressLint("JavascriptInterface")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,13 +93,15 @@ public class ContentActivity extends AppCompatActivity {
         // 开启Application Cache功能
         mWebView.getSettings().setAppCacheEnabled(true);
 
+        mWebView.addJavascriptInterface(new JavascriptInterface(this), "imagelistner");
 
 
-
-        int article_id = getIntent().getIntExtra("article_id",-1);
+        int article_id = getIntent().getIntExtra("article_id", -1);
         String article_title = getIntent().getStringExtra("title");
 
         actionBar.setTitle(article_title);
+
+
 
 
         RetrofitFactory.getZhiHUDailyServiceInstance()
@@ -109,6 +123,40 @@ public class ContentActivity extends AppCompatActivity {
 
                         loadHtmlResource(value);
 
+                        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+
+                        fab.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+
+                                String nowDate = format.format(new Date(System.currentTimeMillis()));
+
+                                CollectBean collectBean = new CollectBean(value.getId(), value.getTitle(), value.getImage(), nowDate);
+
+                                int insertResult = DBUtil.insert(collectBean);
+
+                                LogUtil.i("文章Id:" + value.getId() + "  文章标题:" + value.getTitle() + "  收藏结果：" + insertResult);
+
+
+                                if (insertResult == -1) {
+
+                                    SnackBarUtil.SnackTip(CoordinatorLayout, "此篇文章您已经收藏啦😘");
+
+                                } else {
+
+
+                                    SnackBarUtil.SnackTip(CoordinatorLayout, "文章收藏成功😄");
+
+                                }
+
+
+                                LogUtil.i("fab的点击事件执行了！");
+
+
+                            }
+                        });
 
 
                         /**
@@ -117,30 +165,34 @@ public class ContentActivity extends AppCompatActivity {
                          *
                          */
                         new Thread(new Runnable() {
-                                @Override
-                                public void run() {
+                            @Override
+                            public void run() {
 
-                                    try {
+                                try {
 
                                     final Bitmap bmp = Glide.with(context)
                                             .load(value.getImage())
                                             .asBitmap()
-                                            .into(FutureTarget.SIZE_ORIGINAL,FutureTarget.SIZE_ORIGINAL)
+                                            .into(FutureTarget.SIZE_ORIGINAL, FutureTarget.SIZE_ORIGINAL)
                                             .get();
 
 
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
 
-                                                Palette palette = Palette.from(bmp).generate();
+                                            Palette palette = Palette.from(bmp).generate();
 
-                                                int mutedColor = palette.getMutedColor(Color.GREEN);
+                                            int mutedColor = palette.getMutedColor(getResources().getColor(R.color.colorGreen));
 
-                                                fab.setBackgroundTintList(ColorStateList.valueOf(mutedColor));
+                                            int vibrantColor = palette.getDarkVibrantColor(getResources().getColor(R.color.colorGreen));
 
-                                            }
-                                        });
+                                            fab.setBackgroundTintList(ColorStateList.valueOf(mutedColor));
+
+                                            fab.setRippleColor(vibrantColor);
+
+                                        }
+                                    });
 
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -150,7 +202,7 @@ public class ContentActivity extends AppCompatActivity {
 
 
                             }
-                            }).start();
+                        }).start();
 
                     }
 
@@ -169,7 +221,7 @@ public class ContentActivity extends AppCompatActivity {
         /**
          * 监听webView加载页面是否完成
          */
-        mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
 
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -177,22 +229,59 @@ public class ContentActivity extends AppCompatActivity {
 
 //                http://news-at.zhihu.com/api/4/story-extra/#{id}
 
-                LogUtil.i("url==>"+url+"加载结束");
+                LogUtil.i("url==>" + url + "加载结束");
+                addImageClickListner();
+
 
 
             }
 
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+
+                LogUtil.i("加载的图片资源: "+url);
+            }
+
+
+            //当加载到404的时候调用该方法
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+            }
         });
 
 
     }
+
+
+    // 注入js函数监听
+    private void addImageClickListner () {
+        // 这段js函数的功能，遍历所有的img节，并添加onclick函数，函数的功能是在图片点击的时候调用本地java接口并传递url过去
+        mWebView.loadUrl("javascript:(function(){" +
+                "var objs = document.getElementsByTagName(\"img\"); " +
+                "for(var i=0;i<objs.length;i++)  " +
+                "{"
+                + "    objs[i].onclick=function()  " +
+                "    {  "
+                + "        window.imagelistner.openImage(this.src);  " +
+                "    }  " +
+                "}" +
+                "})()");
+    }
+
+
 
     /**
      * webView加载html资源
      */
     private void loadHtmlResource(ContentBean contentBean) {
 
-        LogUtil.i("新闻id"+contentBean.getId());
+        LogUtil.i("新闻id" + contentBean.getId());
+        LogUtil.i("新闻标题:" + contentBean.getTitle());
+        LogUtil.i("新闻图片:" + contentBean.getImage());
+
 
         String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/news.css\" type=\"text/css\">";
         String html = "<html><head>" + css + "</head><body>" + contentBean.getBody() + "</body></html>";
@@ -206,7 +295,7 @@ public class ContentActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-          getMenuInflater().inflate(R.menu.menu_content_activity,menu);
+        getMenuInflater().inflate(R.menu.menu_content_activity, menu);
 
 
         return super.onCreateOptionsMenu(menu);
@@ -216,10 +305,7 @@ public class ContentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
 
-
-
-
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case android.R.id.home:
 
@@ -240,5 +326,25 @@ public class ContentActivity extends AppCompatActivity {
 
 
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+
+
+        if(mWebView != null){
+
+            mWebView.clearHistory();
+
+            ((ViewGroup)mWebView.getParent()).removeView(mWebView);
+
+            mWebView = null;
+
+        }
+
+        super.onDestroy();
+
+
+
     }
 }

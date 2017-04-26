@@ -3,6 +3,7 @@ package com.merpyzf.zhihudaily.data;
 import com.merpyzf.zhihudaily.data.entity.ContentBean;
 import com.merpyzf.zhihudaily.data.entity.NewsBean;
 import com.merpyzf.zhihudaily.data.entity.SplashBean;
+import com.merpyzf.zhihudaily.data.entity.ThemeBean;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -36,6 +37,11 @@ public interface ZhiHuDailyApi {
 
     @GET("4/news/{news_id}")
     Observable<ContentBean> getNewsContent(@Path("news_id")String news_id);
+
+//    http://news-at.zhihu.com/api/
+
+    @GET("4/themes")
+    Observable<ThemeBean> getThemes();
 
 
 
