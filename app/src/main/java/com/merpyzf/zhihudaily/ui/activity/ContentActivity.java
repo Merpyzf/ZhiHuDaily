@@ -63,6 +63,8 @@ public class ContentActivity extends AppCompatActivity {
     FloatingActionButton fab;
     @BindView(R.id.CoordinatorLayout)
     CoordinatorLayout CoordinatorLayout;
+    @BindView(R.id.toolbar_title)
+    TextView toolbar_title;
 
 
     @SuppressLint("JavascriptInterface")
@@ -72,6 +74,7 @@ public class ContentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scrolling);
         context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         ButterKnife.bind(this);
@@ -99,7 +102,12 @@ public class ContentActivity extends AppCompatActivity {
         int article_id = getIntent().getIntExtra("article_id", -1);
         String article_title = getIntent().getStringExtra("title");
 
-        actionBar.setTitle(article_title);
+//        actionBar.setTitle(article_title); //没有找到给Toobar中的文字设置跑马灯的方法
+        // TODO: 2017/5/24  希望能够找到实现方法
+
+        toolbar_title.setText(article_title);
+
+
 
 
         RetrofitFactory.getZhiHUDailyServiceInstance()
