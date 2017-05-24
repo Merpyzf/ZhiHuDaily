@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,34 +32,38 @@ import butterknife.ButterKnife;
  * 组合控件，带有轮播图的ListView
  */
 
-public class HeaderListView extends ListView implements View.OnTouchListener,ViewPager.OnPageChangeListener{
+public class HeaderListView extends ListView implements ViewPager.OnPageChangeListener {
+
+    @BindView(R.id.viewPager)
+    ViewPager mViewPager;
+    @BindView(R.id.ll_point)
+    LinearLayout ll_point;
 
     private Context context;
-    @BindView(R.id.viewPager) ViewPager mViewPager;
-    @BindView(R.id.ll_point) LinearLayout ll_point;
-
     private TextView tv_top_title;
     private ImageView iv_top_show;
     private int mPosition;
-
     private List<NewsBean.TopStoriesBean> mTopStories = null;
     private ArrayList<View> mTopViews = null;
     private MyPagerAdapter mPagerAdapter = null;
     private Timer mTimer;
+    private float downX;
+    private float downY;
 
 
     public HeaderListView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public HeaderListView(Context context, AttributeSet attrs) {
 
-        this(context,attrs,0);
+        this(context, attrs, 0);
     }
 
     public HeaderListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
+
         //初始化头布局
         InitHeader();
 
@@ -66,18 +71,19 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
     /**
      * 设置新闻数据
+     *
      * @param TopStories
      */
-    public void setTopStories(List TopStories){
+    public void setTopStories(List TopStories) {
 
         this.mTopStories = TopStories;
 
-        if(mPagerAdapter == null) {
+        if (mPagerAdapter == null) {
 
             //初始化数据
             InitData();
 
-        }else {
+        } else {
 
             mPagerAdapter.notifyDataSetChanged();
         }
@@ -91,27 +97,24 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
         mTopViews = new ArrayList<View>();
 
-        for(int i=0;i<mTopStories.size();i++){
+        for (int i = 0; i < mTopStories.size(); i++) {
 
-
-            View view = View.inflate(context,R.layout.item_viewpager,null);
+            View view = View.inflate(context, R.layout.item_viewpager, null);
 
             tv_top_title = (TextView) view.findViewById(R.id.tv_top_title);
 
-            iv_top_show = (ImageView)view.findViewById(R.id.iv_top_show);
+            iv_top_show = (ImageView) view.findViewById(R.id.iv_top_show);
 
             iv_top_show.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-
-                    LogUtil.i(mPosition+"");
+                    LogUtil.i(mPosition + "");
                     //轮播图的点击事件回调
-                    mTopPagerClickListener.click(mPosition,mTopStories.get(mPosition));
+                    mTopPagerClickListener.click(mPosition, mTopStories.get(mPosition));
 
                 }
             });
-
 
 
             NewsBean.TopStoriesBean storiesBean = mTopStories.get(i);
@@ -132,15 +135,15 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
 
         //数据初始化完毕之后，将数据源设置到适配器
-
-         mPagerAdapter = new MyPagerAdapter();
+        mPagerAdapter = new MyPagerAdapter();
         mViewPager.setAdapter(mPagerAdapter);
 
 
-        mViewPager.setCurrentItem(500000-(5000000%mTopStories.size()));
+        mViewPager.setCurrentItem(500000 - (5000000 % mTopStories.size()));
 
 
         startTopPagerLoop();
+
         mViewPager.setOnPageChangeListener(this);
 
 
@@ -164,31 +167,32 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
                     @Override
                     public void run() {
 
-                        mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
+                        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
 
                     }
                 });
 
 
             }
-        },3000,3000);
+        }, 3000, 3000);
 
     }
 
     /**
      * 初始化指示器小圆点
+     *
      * @param size 小圆点的个数
      */
     private void InitPoint(int size) {
 
 
-        for(int i=0;i<size;i++){
+        for (int i = 0; i < size; i++) {
 
             ImageView iv_gray_point = new ImageView(context);
 
             iv_gray_point.setImageResource(R.drawable.gray_point_shape);
 
-            if(i==0){
+            if (i == 0) {
 
                 iv_gray_point.setImageResource(R.drawable.white_point_shape);
             }
@@ -211,112 +215,92 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
      */
     private void InitHeader() {
 
-        View view = View.inflate(context, R.layout.header_listview,null);
+        View view = View.inflate(context, R.layout.header_listview, null);
 
-        ButterKnife.bind(this,view);
-        // TODO: 2017/4/24 根据屏幕的高度动态设置轮播图的高度，指示器的大小
+        ButterKnife.bind(this, view);
         addHeaderView(view);
-        mViewPager.setOnTouchListener(this);
 
-    }
+        // TODO: 2017/5/23  此处的事件拦截还有Bug down事件不知道被谁给消费了
+        mViewPager.setOnTouchListener(new OnTouchListener() {
 
-    /**
-     *  当手指滑动viewPager时停止循环轮播,当手指移除之后继续进行轮播
-     * @param v
-     * @param event
-     * @return
-     */
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
 
-        switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
 
-            case MotionEvent.ACTION_DOWN:
+                        downX = event.getX();
+                        downY = event.getY();
 
-                if(mTimer!=null){
+                        Log.i("wk","down事件触发了==》");
 
-                    mTimer.cancel();
-                    mTimer = null;
-                }
+                        if (mTimer != null) {
 
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if(mTimer!=null){
+                            mTimer.cancel();
+                            mTimer = null;
+                            Log.i("wk", "按下==》暂停轮播");
+                        }
 
-                    mTimer.cancel();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (mTimer != null) {
 
-                    mTimer = null;
-                }
+                            mTimer.cancel();
+                            mTimer = null;
+                            Log.i("wk", "滑动==》暂停轮播");
 
-
-                break;
+                        }
 
 
-            case MotionEvent.ACTION_UP:
-                //当手指抬起时继续进行轮播图的滚动
-                startTopPagerLoop();
-
-                break;
+                        float currentX = event.getX();
+                        float currentY = event.getY();
 
 
-        }
+                        if (Math.abs(currentY - downY) > Math.abs(currentX - downX)) {
 
-        return false;
-    }
+                            //拦截外部上下的事件
 
+                            Log.i("wk", "进行事件的拦截");
 
-    int lastX = 0;
-    int lastY = 0;
-    /**
-     * 进行轮播图左右滑动时的事件拦截
-     * @param ev
-     * @return
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+                            //不让外部控件拦截当前事件
+                            getParent().requestDisallowInterceptTouchEvent(false);
+
+                        }else {
 
 
-        switch (ev.getAction()){
+                            getParent().requestDisallowInterceptTouchEvent(true);
 
-            case MotionEvent.ACTION_DOWN:
+                        }
+                        downX = currentX;
+                        downY = currentY;
 
-                lastX = (int) ev.getRawX();
 
-                lastY = (int)ev.getY();
+                        break;
 
-                break;
 
-            case MotionEvent.ACTION_MOVE:
+                    case MotionEvent.ACTION_UP:
+                        //当手指抬起时继续进行轮播图的滚动
+                        startTopPagerLoop();
 
-                int offsetX = (int) ev.getRawX() - lastX;
-                int offsetY = (int) ev.getRawY() - lastY;
-                //判读滑动的方向
-                if (Math.abs(offsetX)>Math.abs(offsetY)) {
+                        Log.i("wk", "继续轮播");
 
-                    requestDisallowInterceptTouchEvent(true);
+                        break;
 
-                } else {
 
-                    requestDisallowInterceptTouchEvent(false);
                 }
 
 
-                lastX = (int) ev.getRawX();
-                lastY = (int) ev.getRawY();
-            case MotionEvent.ACTION_UP:
+                return false;
+            }
+        });
 
-                break;
-        }
-
-
-        return super.dispatchTouchEvent(ev);
 
     }
 
 
 
 
-    class MyPagerAdapter extends android.support.v4.view.PagerAdapter{
+    class MyPagerAdapter extends android.support.v4.view.PagerAdapter {
 
 
         @Override
@@ -332,18 +316,16 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-            int newPosition =  position%mTopStories.size();
+            int newPosition = position % mTopStories.size();
 
             View view = mTopViews.get(newPosition);
             //如果View已经在之前添加到了一个父组件，则必须先remove，否则会抛出IllegalStateException。
-            ViewParent viewParent =view.getParent();
-            if (viewParent!=null){
-                ViewGroup parent = (ViewGroup)viewParent;
+            ViewParent viewParent = view.getParent();
+            if (viewParent != null) {
+                ViewGroup parent = (ViewGroup) viewParent;
                 parent.removeView(view);
             }
             container.addView(view);
-
-
 
 
             return view;
@@ -360,6 +342,7 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
     /**
      * ViewPager的滑动状态监听
+     *
      * @param position
      * @param positionOffset
      * @param positionOffsetPixels
@@ -371,19 +354,20 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
     /**
      * 当ViewPager页面切换时，更新指示器的状态
+     *
      * @param position
      */
     @Override
     public void onPageSelected(final int position) {
 
 
-        for(int i=0;i<ll_point.getChildCount();i++){
+        for (int i = 0; i < ll_point.getChildCount(); i++) {
 
-            if(i==position%mTopViews.size()){
+            if (i == position % mTopViews.size()) {
 
                 ImageView point = (ImageView) ll_point.getChildAt(i);
                 point.setImageResource(R.drawable.white_point_shape);
-            }else {
+            } else {
 
                 ImageView point = (ImageView) ll_point.getChildAt(i);
                 point.setImageResource(R.drawable.gray_point_shape);
@@ -391,10 +375,9 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
 
         }
 
-        mPosition = position%mTopStories.size();
+        mPosition = position % mTopStories.size();
 
     }
-
 
 
     @Override
@@ -408,12 +391,13 @@ public class HeaderListView extends ListView implements View.OnTouchListener,Vie
      */
     private TopPagerClickListener mTopPagerClickListener;
 
-    public interface TopPagerClickListener{
+    public interface TopPagerClickListener {
 
-        void click(int position,NewsBean.TopStoriesBean storiesBean);
+        void click(int position, NewsBean.TopStoriesBean storiesBean);
 
     }
-    public void setOnTopPagerClickListener(TopPagerClickListener topPagerClickListener){
+
+    public void setOnTopPagerClickListener(TopPagerClickListener topPagerClickListener) {
 
         mTopPagerClickListener = topPagerClickListener;
 

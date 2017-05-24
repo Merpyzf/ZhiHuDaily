@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -22,9 +23,9 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
-import com.merpyzf.zhihudaily.ui.MainActivity;
 import com.merpyzf.zhihudaily.R;
 import com.merpyzf.zhihudaily.data.entity.SplashBean;
+import com.merpyzf.zhihudaily.ui.MainActivity;
 import com.merpyzf.zhihudaily.util.LogUtil;
 import com.merpyzf.zhihudaily.util.ToastUtil;
 import com.merpyzf.zhihudaily.util.http.RetrofitFactory;
@@ -101,25 +102,58 @@ public class SplashActivity extends AppCompatActivity {
 
                         mSplashImageUrl = splash_image_url;
 
+                        Animation scaleAnimation = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                        scaleAnimation.setDuration(3000);
+                        scaleAnimation.setFillAfter(true);
+
+
+
                         Glide.with(context)
                                 .load(splash_image_url)
                                 .diskCacheStrategy(DiskCacheStrategy.ALL) //设置图片全尺寸缓存
+                                .animate(scaleAnimation)
                                 .error(R.drawable.img_error)
-                                .centerCrop()
                                 .into(iv_splash);
 
-                        setScaleAnim(iv_splash);
+
+                        scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                                Log.i("wk", "动画开始");
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+
+                                //动画结束之后进行跳转到主页面
+
+                                startActivity(new Intent(context, MainActivity.class));
+
+                                Log.i("wk", "动画结束");
+
+                                finish();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
-                       LogUtil.i("出错");
+                        LogUtil.i("出错");
 
 //                        mSplashImageName
-                        LogUtil.i("图片名称:"+mSplashImageName);
+                        LogUtil.i("图片名称:" + mSplashImageName);
 
-                        ToastUtil.show(context,"你已经进入了没有网络的异次元");
+                        ToastUtil.show(context, "你已经进入了没有网络的异次元");
 
                         startActivity(new Intent(context, MainActivity.class));
                         finish();
@@ -131,42 +165,6 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 });
 
-
-    }
-
-    /**
-     * 添加缩放动画，当动画结束之后进行跳转
-     *
-     * @param iv_splash
-     */
-    private void setScaleAnim(ImageView iv_splash) {
-
-        Animation scaleAnimation = new ScaleAnimation(1f, 1.1f, 1f, 1.1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        scaleAnimation.setDuration(3000);
-        scaleAnimation.setFillBefore(true);
-        scaleAnimation.setFillAfter(true);
-        iv_splash.startAnimation(scaleAnimation);
-
-        scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                //动画结束之后进行跳转到主页面
-
-                startActivity(new Intent(context, MainActivity.class));
-                finish();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
 
     }
 

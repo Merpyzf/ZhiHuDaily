@@ -102,8 +102,6 @@ public class ContentActivity extends AppCompatActivity {
         actionBar.setTitle(article_title);
 
 
-
-
         RetrofitFactory.getZhiHUDailyServiceInstance()
                 .getNewsContent(String.valueOf(article_id))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -233,7 +231,6 @@ public class ContentActivity extends AppCompatActivity {
                 addImageClickListner();
 
 
-
             }
 
 
@@ -241,7 +238,7 @@ public class ContentActivity extends AppCompatActivity {
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
 
-                LogUtil.i("加载的图片资源: "+url);
+                LogUtil.i("加载的图片资源: " + url);
             }
 
 
@@ -257,20 +254,23 @@ public class ContentActivity extends AppCompatActivity {
 
 
     // 注入js函数监听
-    private void addImageClickListner () {
+    private void addImageClickListner() {
         // 这段js函数的功能，遍历所有的img节，并添加onclick函数，函数的功能是在图片点击的时候调用本地java接口并传递url过去
         mWebView.loadUrl("javascript:(function(){" +
                 "var objs = document.getElementsByTagName(\"img\"); " +
+                "var str;" +
+                "for(var i=0;i<objs.length;i++){" +
+                "  str += objs[i].src + \" \";}" +
+
                 "for(var i=0;i<objs.length;i++)  " +
                 "{"
                 + "    objs[i].onclick=function()  " +
                 "    {  "
-                + "        window.imagelistner.openImage(this.src);  " +
+                + "        window.imagelistner.openImage(str,this.src);  " +
                 "    }  " +
                 "}" +
                 "})()");
     }
-
 
 
     /**
@@ -332,18 +332,17 @@ public class ContentActivity extends AppCompatActivity {
     protected void onDestroy() {
 
 
-        if(mWebView != null){
+        if (mWebView != null) {
 
             mWebView.clearHistory();
 
-            ((ViewGroup)mWebView.getParent()).removeView(mWebView);
+            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
 
             mWebView = null;
 
         }
 
         super.onDestroy();
-
 
 
     }

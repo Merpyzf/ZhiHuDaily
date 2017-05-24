@@ -31,8 +31,8 @@
             android:name=".ui.activity.ContentActivity"
             android:label="@string/title_activity_scrolling"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ui.TestActivity"></activity>
-        <activity android:name=".ui.activity.ShowImageActivity"></activity>
+        <activity android:name=".ui.activity.ShowImageActivity" />
+        <activity android:name=".ui.activity.ViewPagerPhotoViewActivity"></activity>
     </application>
 
 </manifest>

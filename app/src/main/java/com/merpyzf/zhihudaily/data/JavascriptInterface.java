@@ -19,15 +19,17 @@ public class JavascriptInterface {
     }
 
     @android.webkit.JavascriptInterface
-    public void openImage(String img) {
+    public void openImage(String allImg,String img) {
 
         LogUtil.i("网页中的imageUrl"+img);
+        LogUtil.i("网页中的所有imageUrl"+allImg);
 
 
 
         Intent intent = new Intent(context,ShowImageActivity.class);
 
         intent.putExtra("image_url",img);
+        intent.putExtra("page_image",allImg);
 
         context.startActivity(intent);
 

@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Context context;
-
     private ActionBarDrawerToggle mDrawerToggle;
     private FragmentManager manager;
     private FragmentTransaction mTransaction;
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         mTransaction.replace(R.id.fl_content, new MainFragment());
         mTransaction.commit();
 
+        // TODO: 2017/5/23 社会化分享功能
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
 
