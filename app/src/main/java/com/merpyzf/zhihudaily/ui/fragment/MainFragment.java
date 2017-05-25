@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +72,6 @@ public class MainFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         context = getActivity();
-
 
         swipe_layout.setColorScheme(R.color.colorGreen,R.color.colorAccent,R.color.colorGreenDark);
 
@@ -274,6 +275,18 @@ public class MainFragment extends Fragment {
 
         });
 
+        //在Fragment中使用Activity中控件的方式
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        Toolbar mToolBar = (Toolbar) activity.findViewById(R.id.toolbar);
+
+        mToolBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+               mHeaderListView.smoothScrollToPosition(0);
+
+            }
+        });
 
 
         return view;

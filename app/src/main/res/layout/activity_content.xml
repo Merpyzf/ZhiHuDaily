@@ -63,7 +63,6 @@
 
                 <TextView
                     android:id="@+id/toolbar_title"
-                    android:text="This will run the marquee animation forever"
                     android:textSize="@dimen/abc_text_size_title_material_toolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -71,7 +71,7 @@ public class ContentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling);
+        setContentView(R.layout.activity_content);
         context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -99,14 +99,14 @@ public class ContentActivity extends AppCompatActivity {
         mWebView.addJavascriptInterface(new JavascriptInterface(this), "imagelistner");
 
 
+
         int article_id = getIntent().getIntExtra("article_id", -1);
         String article_title = getIntent().getStringExtra("title");
 
-//        actionBar.setTitle(article_title); //没有找到给Toobar中的文字设置跑马灯的方法
+        actionBar.setTitle(""); //没有找到给Toobar中的文字设置跑马灯的方法
         // TODO: 2017/5/24  希望能够找到实现方法
 
         toolbar_title.setText(article_title);
-
 
 
 
@@ -254,6 +254,8 @@ public class ContentActivity extends AppCompatActivity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
+
+
             }
         });
 
@@ -353,5 +355,12 @@ public class ContentActivity extends AppCompatActivity {
         super.onDestroy();
 
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        toolbar_title.requestFocus();
     }
 }

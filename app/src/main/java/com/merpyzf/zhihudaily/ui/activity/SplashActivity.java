@@ -48,6 +48,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.merpyzf.zhihudaily.R.id.fl_download;
 import static com.merpyzf.zhihudaily.util.LogUtil.i;
 
 /**
@@ -60,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @BindView(R.id.iv_splash)
     ImageView iv_splash;
-    @BindView(R.id.fl_download)
+    @BindView(fl_download)
     FrameLayout fl_download_image;
     private Context context;
     private String mSplashImageUrl = null;
@@ -75,6 +76,7 @@ public class SplashActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         context = this;
+        fl_download_image.setAlpha(0.5f);
 
         /**
          * 请求知乎日报api接口获取splash页面的json数据解析并展示图片到imageview
@@ -150,7 +152,6 @@ public class SplashActivity extends AppCompatActivity {
                         e.printStackTrace();
                         LogUtil.i("出错");
 
-//                        mSplashImageName
                         LogUtil.i("图片名称:" + mSplashImageName);
 
                         ToastUtil.show(context, "你已经进入了没有网络的异次元");
@@ -169,7 +170,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.fl_download)
+    @OnClick(fl_download)
     public void downloadImage(View v) {
 
         /**

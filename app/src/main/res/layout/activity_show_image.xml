@@ -6,33 +6,18 @@
     android:layout_height="match_parent"
     android:background="#000"
     android:gravity="center"
-    tools:context="com.merpyzf.zhihudaily.ui.activity.ShowImageActivity">
+    tools:context="com.merpyzf.zhihudaily.ui.activity.ShowPictureActivity">
 
-    <com.merpyzf.zhihudaily.ui.customui.PagerPhotoView
+
+    <com.merpyzf.zhihudaily.ui.customui.PhotoPagerView
         android:id="@+id/pagerPhotoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.merpyzf.zhihudaily.ui.customui.PagerPhotoView>
+    </com.merpyzf.zhihudaily.ui.customui.PhotoPagerView>
+
+    <include layout="@layout/app_bar_main"/>
 
 
-
-
-<FrameLayout
-    android:id="@+id/fl_downImage"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_alignParentRight="true"
-    android:layout_margin="10dp"
-    android:background="@drawable/shape_bg_down"
-    >
-    <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_down"
-        />
-</FrameLayout>
 
 </RelativeLayout>

@@ -1,7 +1,6 @@
 package com.merpyzf.zhihudaily.ui.customui;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -15,24 +14,23 @@ import com.merpyzf.zhihudaily.R;
 import java.util.List;
 
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by 春水碧于天 on 2017/5/24.
  */
 
-public class PagerPhotoView extends ViewPager {
+public class PhotoPagerView extends ViewPager {
 
     private List<String> imagesUrl = null;
     private Context mContext;
-    Paint mPaint = null;
 
-
-    public PagerPhotoView(Context context) {
-        this(context,null);
+    public PhotoPagerView(Context context) {
+        this(context, null);
         mContext = context;
     }
 
-    public PagerPhotoView(Context context, AttributeSet attrs) {
+    public PhotoPagerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
 
@@ -40,7 +38,7 @@ public class PagerPhotoView extends ViewPager {
     }
 
 
-    public void setImagesUrl(List<String> imagesUrl,int index) {
+    public void setImagesUrl(List<String> imagesUrl, int index) {
 
         this.imagesUrl = imagesUrl;
 
@@ -49,8 +47,6 @@ public class PagerPhotoView extends ViewPager {
         this.setCurrentItem(index);
 
     }
-
-
 
 
     class myPagerAdapter extends PagerAdapter {
@@ -75,6 +71,24 @@ public class PagerPhotoView extends ViewPager {
 
             mPhotoView.setZoomable(true);
 
+            mPhotoView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+                @Override
+                public void onViewTap(View view, float x, float y) {
+
+
+                    // TODO: 2017/5/25 轻触的回调
+
+                    if(mViewTapListener!=null){
+
+                        mViewTapListener.onViewTap(view,x,y);
+
+                    }
+
+
+                }
+            });
+
+
             Glide.with(mContext).load(imagesUrl.get(position))
                     .priority(Priority.HIGH)
                     .into(mPhotoView);
@@ -95,4 +109,17 @@ public class PagerPhotoView extends ViewPager {
     }
 
 
+    public interface OnViewTapListener {
+
+        void onViewTap(View view, float x, float y);
+
+
+    }
+
+
+    private OnViewTapListener mViewTapListener;
+
+    public void setOnViewTapListener(OnViewTapListener mViewTapListener) {
+        this.mViewTapListener = mViewTapListener;
+    }
 }

@@ -3,7 +3,7 @@ package com.merpyzf.zhihudaily.data;
 import android.content.Context;
 import android.content.Intent;
 
-import com.merpyzf.zhihudaily.ui.activity.ShowImageActivity;
+import com.merpyzf.zhihudaily.ui.activity.ShowPictureActivity;
 import com.merpyzf.zhihudaily.util.LogUtil;
 
 /**
@@ -26,7 +26,7 @@ public class JavascriptInterface {
 
 
 
-        Intent intent = new Intent(context,ShowImageActivity.class);
+        Intent intent = new Intent(context,ShowPictureActivity.class);
 
         intent.putExtra("image_url",img);
         intent.putExtra("page_image",allImg);

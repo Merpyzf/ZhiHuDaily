@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     ListView lv_theme;
 
 
-
     private Context context;
     private ActionBarDrawerToggle mDrawerToggle;
     private FragmentManager manager;
@@ -169,10 +168,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onBackPressed() {
 
 
         moveTaskToBack(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 }

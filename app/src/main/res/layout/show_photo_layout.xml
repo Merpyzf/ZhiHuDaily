@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#000"
     android:gravity="center"
-    tools:context="com.merpyzf.zhihudaily.ui.activity.ShowImageActivity">
+    tools:context="com.merpyzf.zhihudaily.ui.activity.ShowPictureActivity">
 
 
     <uk.co.senab.photoview.PhotoView
